@@ -1,0 +1,208 @@
+@import 'tailwindcss';
+
+@plugin 'tailwindcss-animate';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+    --font-sans:
+        'Poppins', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --font-display:
+        'Nunito', 'Poppins', ui-sans-serif, system-ui, sans-serif;
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+    --background: oklch(0.99 0.002 142.2);
+    --foreground: oklch(0.15 0.02 160.5);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.15 0.02 160.5);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.15 0.02 160.5);
+    --primary: oklch(0.54 0.18 158.7);
+    --primary-foreground: oklch(0.98 0.004 160.5);
+    --secondary: oklch(0.96 0.008 160.5);
+    --secondary-foreground: oklch(0.21 0.02 160.5);
+    --muted: oklch(0.96 0.008 160.5);
+    --muted-foreground: oklch(0.52 0.015 160.5);
+    --accent: oklch(0.94 0.012 160.5);
+    --accent-foreground: oklch(0.21 0.02 160.5);
+    --destructive: oklch(0.596 0.24 27.33);
+    --destructive-foreground: oklch(0.98 0.004 160.5);
+    --border: oklch(0.91 0.008 160.5);
+    --input: oklch(0.91 0.008 160.5);
+    --ring: oklch(0.54 0.18 158.7);
+    --chart-1: oklch(0.646 0.222 158.7);
+    --chart-2: oklch(0.6 0.118 142.2);
+    --chart-3: oklch(0.398 0.07 150.4);
+    --chart-4: oklch(0.828 0.189 135.6);
+    --chart-5: oklch(0.769 0.188 142.8);
+    --radius: 0.875rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.87 0 0);
+}
+
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        font-feature-settings: 'rlig' 1, 'calt' 1;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* Modern medical-themed scroll bars */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(to bottom, #10b981, #059669);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(to bottom, #059669, #047857);
+    }
+
+    /* Medical-inspired animations */
+    @keyframes heartbeat {
+        0%, 100% { transform: scale(1); }
+        25% { transform: scale(1.05); }
+        50% { transform: scale(1.1); }
+        75% { transform: scale(1.05); }
+    }
+
+    @keyframes pulse-green {
+        0%, 100% {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+        50% {
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.6);
+            background-color: rgba(16, 185, 129, 0.2);
+        }
+    }
+
+    @keyframes medic-float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-8px) rotate(1deg); }
+    }
+
+    .animate-heartbeat {
+        animation: heartbeat 2s ease-in-out infinite;
+    }
+
+    .animate-pulse-green {
+        animation: pulse-green 3s ease-in-out infinite;
+    }
+
+    .animate-medic-float {
+        animation: medic-float 5s ease-in-out infinite;
+    }
+
+    /* Medical glass morphism effect */
+    .glass-medical {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(16, 185, 129, 0.1);
+    }
+
+    /* Enhanced medical focus states */
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+        outline: 2px solid #10b981;
+        outline-offset: 2px;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    }
+
+    /* Medical cross pattern */
+    .medical-cross::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 20px;
+        height: 4px;
+        background: currentColor;
+        opacity: 0.1;
+    }
+
+    .medical-cross::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 4px;
+        height: 20px;
+        background: currentColor;
+        opacity: 0.1;
+    }
+}
