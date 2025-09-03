@@ -18,6 +18,8 @@ Route::get('/display-queue', [DisplayController::class, 'index'])->name('display
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('dashboard/call-next', [DashboardController::class, 'callNext'])->name('dashboard.call-next');
+    Route::post('dashboard/complete-queue', [DashboardController::class, 'completeQueue'])->name('dashboard.complete-queue');
+    Route::post('dashboard/set-counter', [DashboardController::class, 'setCounter'])->name('dashboard.set-counter');
 });
 
 require __DIR__ . '/settings.php';

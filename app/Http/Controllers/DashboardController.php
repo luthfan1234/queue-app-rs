@@ -12,10 +12,14 @@ class DashboardController extends Controller
     /**
      * Display the dashboard with queue information
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Get current serving queue
+        // Get selected counter from request or default to 1
+        $selectedCounter = $request->get('counter', 1);
+        
+        // Get current serving queue for this counter
         $currentServing = Queue::where('status', 'serving')
+            ->where('counter', $selectedCounter)
             ->first();
 
         // Get next queues in line
@@ -28,9 +32,24 @@ class DashboardController extends Controller
         $totalServing = Queue::where('status', 'serving')->count();
         $totalComplete = Queue::where('status', 'completed')->count();
 
+        // Get counters status
+        $countersStatus = [];
+        for ($i = 1; $i <= 3; $i++) {
+            $servingQueue = Queue::where('status', 'serving')
+                ->where('counter', $i)
+                ->first();
+            $countersStatus[$i] = [
+                'counter' => $i,
+                'status' => $servingQueue ? 'busy' : 'available',
+                'current_queue' => $servingQueue
+            ];
+        }
+
         return Inertia::render('dashboard', [
             'currentServing' => $currentServing,
             'nextQueues' => $nextQueues,
+            'selectedCounter' => $selectedCounter,
+            'countersStatus' => $countersStatus,
             'statistics' => [
                 'waiting' => $totalWaiting,
                 'serving' => $totalServing,
@@ -44,9 +63,13 @@ class DashboardController extends Controller
      */
     public function callNext(Request $request)
     {
-        // Mark current serving as complete
+        // Get counter from request
+        $counter = $request->input('counter', 1);
+        
+        // Mark current serving as complete for this counter
         Queue::where('status', 'serving')
-            ->update(['status' => 'completed']);
+            ->where('counter', $counter)
+            ->update(['status' => 'completed', 'completed_at' => now()]);
 
         // Get next queue in line
         $nextQueue = Queue::where('status', 'waiting')
@@ -56,7 +79,9 @@ class DashboardController extends Controller
         if ($nextQueue) {
             $nextQueue->update([
                 'status' => 'serving',
-                'called_at' => now()
+                'counter' => $counter,
+                'called_at' => now(),
+                'served_at' => now()
             ]);
 
             // Broadcast the queue update
@@ -64,8 +89,8 @@ class DashboardController extends Controller
                 'id' => $nextQueue->id,
                 'number' => $nextQueue->number,
                 'service_name' => $nextQueue->service_name,
-                'called_at' => $nextQueue->updated_at,
-                'counter' => 1,
+                'called_at' => $nextQueue->called_at,
+                'counter' => $counter,
             ]);
 
             return response()->json([
@@ -74,8 +99,8 @@ class DashboardController extends Controller
                     'id' => $nextQueue->id,
                     'number' => $nextQueue->number,
                     'service_name' => $nextQueue->service_name,
-                    'called_at' => $nextQueue->updated_at,
-                    'counter' => 1,
+                    'called_at' => $nextQueue->called_at,
+                    'counter' => $counter,
                 ]
             ]);
         }
@@ -102,6 +127,57 @@ class DashboardController extends Controller
         return response()->json([
             'currentServing' => $currentServing,
             'nextQueues' => $nextQueues,
+        ]);
+    }
+
+    /**
+     * Complete current queue at specific counter
+     */
+    public function completeQueue(Request $request)
+    {
+        $counter = $request->input('counter', 1);
+        
+        $currentQueue = Queue::where('status', 'serving')
+            ->where('counter', $counter)
+            ->first();
+
+        if ($currentQueue) {
+            $currentQueue->update([
+                'status' => 'completed',
+                'completed_at' => now()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Queue completed successfully'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No queue currently serving at this counter'
+        ]);
+    }
+
+    /**
+     * Set counter for dashboard
+     */
+    public function setCounter(Request $request)
+    {
+        $counter = $request->input('counter', 1);
+        
+        // Validate counter number
+        if (!in_array($counter, [1, 2, 3])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid counter number'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'counter' => $counter,
+            'message' => "Counter set to $counter"
         ]);
     }
 }

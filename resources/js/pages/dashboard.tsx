@@ -27,6 +27,14 @@ type Queue = {
 interface DashboardProps extends SharedData {
   currentServing: Queue | null;
   nextQueues: Queue[];
+  selectedCounter: number;
+  countersStatus: {
+    [key: number]: {
+      counter: number;
+      status: 'busy' | 'available';
+      current_queue: Queue | null;
+    };
+  };
   statistics: {
     waiting: number;
     serving: number;
@@ -40,6 +48,8 @@ export default function Dashboard(props: DashboardProps) {
   );
   const [nextQueues, setNextQueues] = useState<Queue[]>(props.nextQueues);
   const [statistics, setStatistics] = useState(props.statistics);
+  const [selectedCounter, setSelectedCounter] = useState<number>(props.selectedCounter);
+  const [countersStatus, setCountersStatus] = useState(props.countersStatus);
 
   const [disabledCallNext, setDisabledCallNext] = useState(false);
 
@@ -51,7 +61,7 @@ export default function Dashboard(props: DashboardProps) {
         waiting: prev.waiting + 1,
       }));
     },
-    "queue-called": (data) => {
+    "queue-called": () => {
       setTimeout(() => {
         setDisabledCallNext(false);
       }, 5000);
@@ -73,6 +83,9 @@ export default function Dashboard(props: DashboardProps) {
           "Content-Type": "application/json",
           "X-CSRF-TOKEN": props.csrf as string,
         },
+        body: JSON.stringify({
+          counter: selectedCounter,
+        }),
       });
 
       if (!response.ok) {
@@ -87,7 +100,17 @@ export default function Dashboard(props: DashboardProps) {
         setStatistics((prev) => ({
           ...prev,
           waiting: prev.waiting - 1,
-          serving: 1,
+          serving: prev.serving,
+        }));
+
+        // Update counters status
+        setCountersStatus((prev) => ({
+          ...prev,
+          [selectedCounter]: {
+            counter: selectedCounter,
+            status: 'busy',
+            current_queue: result.queue,
+          },
         }));
 
         setDisabledCallNext(true);
@@ -100,10 +123,95 @@ export default function Dashboard(props: DashboardProps) {
     }
   };
 
+  const handleCompleteQueue = async () => {
+    try {
+      const response = await fetch("/dashboard/complete-queue", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": props.csrf as string,
+        },
+        body: JSON.stringify({
+          counter: selectedCounter,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        setCurrentServing(null);
+        setStatistics((prev) => ({
+          ...prev,
+          serving: prev.serving - 1,
+          complete: prev.complete + 1,
+        }));
+
+        // Update counters status
+        setCountersStatus((prev) => ({
+          ...prev,
+          [selectedCounter]: {
+            counter: selectedCounter,
+            status: 'available',
+            current_queue: null,
+          },
+        }));
+      } else {
+        alert(result.message || "Failed to complete queue");
+      }
+    } catch (error) {
+      console.error("Error completing queue:", error);
+      alert("Failed to complete queue. Please try again.");
+    }
+  };
+
+  const handleCounterChange = (counter: number) => {
+    setSelectedCounter(counter);
+    // Update current serving based on selected counter
+    const counterStatus = countersStatus[counter];
+    setCurrentServing(counterStatus?.current_queue || null);
+  };
+
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Rumah Sakit Dr. Oen - Sistem Manajemen Antrian" />
       <div className="flex h-full flex-1 flex-col gap-6 rounded-xl p-6">
+        {/* Counter Selection */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users2 className="h-5 w-5 text-green-700" />
+              Pilih Loket
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-4">
+              {[1, 2, 3].map((counter) => (
+                <Button
+                  key={counter}
+                  onClick={() => handleCounterChange(counter)}
+                  variant={selectedCounter === counter ? "default" : "outline"}
+                  className={`p-4 h-16 ${
+                    selectedCounter === counter
+                      ? "bg-green-700 hover:bg-green-800"
+                      : "hover:bg-green-50"
+                  }`}
+                >
+                  <div className="text-center">
+                    <div className="text-lg font-bold">Loket {counter}</div>
+                    <div className="text-xs">
+                      {countersStatus[counter]?.status === 'busy' ? 'Sibuk' : 'Tersedia'}
+                    </div>
+                  </div>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Statistics Cards */}
         <div className="grid auto-rows-min gap-4 md:grid-cols-3">
           <Card className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950">
@@ -167,18 +275,31 @@ export default function Dashboard(props: DashboardProps) {
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Zap className="h-5 w-5 text-green-700" />
-                  Sedang Dilayani
+                  Sedang Dilayani - Loket {selectedCounter}
                 </div>
-                <Button
-                  onClick={handleCallNext}
-                  disabled={nextQueues.length === 0 || disabledCallNext}
-                  size="sm"
-                  className="flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white font-normal"
-                  variant="default"
-                >
-                  <Phone className="h-4 w-4" />
-                  Panggil Selanjutnya
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={handleCallNext}
+                    disabled={nextQueues.length === 0 || disabledCallNext}
+                    size="sm"
+                    className="flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white font-normal"
+                    variant="default"
+                  >
+                    <Phone className="h-4 w-4" />
+                    Panggil Selanjutnya
+                  </Button>
+                  {currentServing && (
+                    <Button
+                      onClick={handleCompleteQueue}
+                      size="sm"
+                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-normal"
+                      variant="default"
+                    >
+                      <CheckCircle2 className="h-4 w-4" />
+                      Selesai
+                    </Button>
+                  )}
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -193,7 +314,7 @@ export default function Dashboard(props: DashboardProps) {
                     </Badge>
                   </div>
                   <div className="text-center text-sm text-muted-foreground">
-                    Called at:{" "}
+                    Loket: {selectedCounter} | Called at:{" "}
                     {currentServing.called_at
                       ? formatTime(currentServing.called_at)
                       : "N/A"}
