@@ -8,7 +8,7 @@ use Inertia\Inertia;
 
 
 Route::get('/', function () {
-    return Inertia::render('welcome');
+    return Inertia::render('kiosk');
 })->name('home');
 
 Route::get('/kiosk', [KioskController::class, 'index'])->name('kiosk');
