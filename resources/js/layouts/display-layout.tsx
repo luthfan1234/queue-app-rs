@@ -24,7 +24,7 @@ export default ({ children }: Props) => {
                 }}
             >
                 {/* Overlay untuk memberikan efek transparan dan mempertahankan readability */}
-                <div className="absolute inset-0 bg-green-500/20 backdrop-blur-[1px]"></div>
+                <div className="absolute inset-0 bg-green-800/20 backdrop-blur-[1px]"></div>
 
                 {/* Medical background pattern overlay */}
                 <div className="absolute inset-0 opacity-[0.02]">
