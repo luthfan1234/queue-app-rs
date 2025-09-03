@@ -333,7 +333,7 @@ export default function Kiosk({ csrf }: { csrf: string }) {
                                     {selectedService}
                                 </div>
                                 <hr style={{ margin: '15px 0', border: '1px solid #333' }} />
-                                <div style={{ fontSize: '12px', marginTop: '15px', lineHeight: 1.4 }}>
+                                <div style={{ fontSize: '22px', marginTop: '15px', lineHeight: 1.4 }}>
                                     Mohon tunggu hingga nomor Anda dipanggil.<br />
                                     Perhatikan layar display untuk giliran Anda.
                                 </div>
