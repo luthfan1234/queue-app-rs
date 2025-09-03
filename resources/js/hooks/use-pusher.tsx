@@ -3,7 +3,7 @@ import type { Channel } from 'pusher-js';
 import { useEffect, useRef } from 'react';
 
 type EventHandlers = {
-    [eventName: string]: (data: any) => void;
+    [eventName: string]: (data: unknown) => void;
 };
 
 export function usePusher(channelName: string, eventHandlers: EventHandlers) {

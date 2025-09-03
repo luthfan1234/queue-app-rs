@@ -55,7 +55,8 @@ export default function Dashboard(props: DashboardProps) {
 
   usePusher("queue-updates", {
     "queue-created": (data) => {
-      setNextQueues((prev) => [...prev, data.queue]);
+      const queueData = data as { queue: Queue };
+      setNextQueues((prev) => [...prev, queueData.queue]);
       setStatistics((prev) => ({
         ...prev,
         waiting: prev.waiting + 1,

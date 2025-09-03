@@ -16,7 +16,7 @@ class DashboardController extends Controller
     {
         // Get selected counter from request or default to 1
         $selectedCounter = $request->get('counter', 1);
-        
+
         // Get current serving queue for this counter
         $currentServing = Queue::where('status', 'serving')
             ->where('counter', $selectedCounter)
@@ -65,7 +65,7 @@ class DashboardController extends Controller
     {
         // Get counter from request
         $counter = $request->input('counter', 1);
-        
+
         // Mark current serving as complete for this counter
         Queue::where('status', 'serving')
             ->where('counter', $counter)
@@ -136,7 +136,7 @@ class DashboardController extends Controller
     public function completeQueue(Request $request)
     {
         $counter = $request->input('counter', 1);
-        
+
         $currentQueue = Queue::where('status', 'serving')
             ->where('counter', $counter)
             ->first();
@@ -165,7 +165,7 @@ class DashboardController extends Controller
     public function setCounter(Request $request)
     {
         $counter = $request->input('counter', 1);
-        
+
         // Validate counter number
         if (!in_array($counter, [1, 2, 3])) {
             return response()->json([
