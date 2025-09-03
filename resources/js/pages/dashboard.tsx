@@ -101,7 +101,7 @@ export default function Dashboard(props: DashboardProps) {
         setStatistics((prev) => ({
           ...prev,
           waiting: prev.waiting - 1,
-          serving: prev.serving,
+          serving: prev.serving + 1, // Add 1 to serving count
         }));
 
         // Update counters status
@@ -147,7 +147,7 @@ export default function Dashboard(props: DashboardProps) {
         setCurrentServing(null);
         setStatistics((prev) => ({
           ...prev,
-          serving: prev.serving - 1,
+          serving: Math.max(0, prev.serving - 1), // Ensure it doesn't go negative
           complete: prev.complete + 1,
         }));
 
@@ -281,13 +281,13 @@ export default function Dashboard(props: DashboardProps) {
                 <div className="flex items-center gap-2">
                   <Button
                     onClick={handleCallNext}
-                    disabled={nextQueues.length === 0 || disabledCallNext}
+                    disabled={nextQueues.length === 0 || disabledCallNext || currentServing !== null}
                     size="sm"
                     className="flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white font-normal"
                     variant="default"
                   >
                     <Phone className="h-4 w-4" />
-                    Panggil Selanjutnya
+                    {currentServing ? 'Sedang Melayani' : 'Panggil Selanjutnya'}
                   </Button>
                   {currentServing && (
                     <Button

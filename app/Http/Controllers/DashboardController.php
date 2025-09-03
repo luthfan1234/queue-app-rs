@@ -66,10 +66,17 @@ class DashboardController extends Controller
         // Get counter from request
         $counter = $request->input('counter', 1);
 
-        // Mark current serving as complete for this counter
-        Queue::where('status', 'serving')
+        // Check if there's already a queue serving at this counter
+        $currentlyServing = Queue::where('status', 'serving')
             ->where('counter', $counter)
-            ->update(['status' => 'completed', 'completed_at' => now()]);
+            ->first();
+
+        if ($currentlyServing) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Loket ' . $counter . ' sedang melayani antrian. Selesaikan antrian terlebih dahulu.'
+            ]);
+        }
 
         // Get next queue in line
         $nextQueue = Queue::where('status', 'waiting')

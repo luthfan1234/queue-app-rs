@@ -55,24 +55,26 @@ export default function DisplayQueue({ currentQueue, nextQueues = [] }: DisplayQ
     };    // Initialize Pusher for real-time updates
     // Lengkapi seperti pada slide PPT
     usePusher('queue-updates', {
-        'queue-created': (data: { queue: Queue }) => {
-            console.log('Queue created event received:', data);
+        'queue-created': (data: unknown) => {
+            const queueData = data as { queue: Queue };
+            console.log('Queue created event received:', queueData);
             // Add new queue to next queues if there's space
             setNext((prev) => {
-                const updated = [...prev, data.queue];
+                const updated = [...prev, queueData.queue];
                 return updated.slice(0, 4);
             });
         },
-        'queue-called': (data: { queue: Queue }) => {
-            console.log("Queue called event received:", data);
-            setCurrent(data.queue);
+        'queue-called': (data: unknown) => {
+            const queueData = data as { queue: Queue };
+            console.log("Queue called event received:", queueData);
+            setCurrent(queueData.queue);
             // Remove the called queue from next queues
-            setNext((prev) => prev.filter((q) => q.id !== data.queue.id));
+            setNext((prev) => prev.filter((q) => q.id !== queueData.queue.id));
             // Trigger pulse animation
             setIsPulsing(true);
             setTimeout(() => setIsPulsing(false), 3000);
             // Play bell and announce
-            playBellAndAnnounce(data.queue);
+            playBellAndAnnounce(queueData.queue);
         },
     });
 
