@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import DisplayLayout from '@/layouts/display-layout';
-import { Stethoscope, Heart, UserCheck, Calendar, Printer } from 'lucide-react';
+import { Stethoscope,Bone, UserCheck, Microscope, ScanLine, BriefcaseMedical, Syringe, Printer } from 'lucide-react';
 import { useState, useRef } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -9,8 +9,11 @@ import html2canvas from 'html2canvas';
 const services = [
     { id: 1, name: 'Pelayanan Gawat Darurat', icon: Stethoscope },
     { id: 2, name: 'Pelayanan Rawat Jalan / Poliklinik', icon: UserCheck },
-    { id: 3, name: 'Pelayanan Rawat Inap', icon: Heart },
-    { id: 4, name: 'Pelayanan Farmasi', icon: Calendar },
+    { id: 3, name: 'Pelayanan Rawat Inap', icon: BriefcaseMedical },
+    { id: 4, name: 'Pelayanan Farmasi', icon: Syringe },
+    { id: 5, name: "Pelayanan Gigi dan Mulut", icon: Bone },
+    { id: 6, name: "Pelayanan Laboratorium", icon: Microscope },
+    { id: 7, name: "Pelayanan Radiologi", icon: ScanLine }
 ];
 
 export default function Kiosk({ csrf }: { csrf: string }) {
@@ -168,8 +171,9 @@ export default function Kiosk({ csrf }: { csrf: string }) {
                 <div className="mb-8 mt-20">
 
                     <h1 className="text-4xl font-bold text-white mb-3 tracking-tight drop-shadow-lg" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                        RUMAH SAKIT DR. OEN SURAKARTA
+                        RSIA Melati Husada
                     </h1>
+                    <p className="text-sm mb-2 text-white/80">Jl. Kawi No.32, Gading Kasri, Kec. Klojen, Kota Malang, Jawa Timur</p>
                     <div className="flex items-center justify-center space-x-3 mb-4">
                         <div className="w-10 h-0.5 bg-gradient-to-r from-white/70 to-white/50 rounded-full"></div>
                         <div className="w-3 h-3 bg-white rounded-full animate-heartbeat shadow-lg"></div>
@@ -179,7 +183,7 @@ export default function Kiosk({ csrf }: { csrf: string }) {
                 </div>
             </header>
 
-            <div className="mx-auto w-full max-w-6xl">
+            <div className="mx-auto w-full max-w-8xl">
                 {!queueNumber ? (
                     <div className="rounded-3xl bg-white/95 backdrop-blur-md p-8 shadow-2xl border border-white/40 relative overflow-hidden">
                         {/* Medical background decoration */}
@@ -198,7 +202,7 @@ export default function Kiosk({ csrf }: { csrf: string }) {
                                 <p className="text-lg text-slate-600">Sentuh tombol sesuai dengan layanan yang diinginkan</p>
                             </div>
 
-                            <div className="grid min-h-80 grid-cols-2 gap-6">
+                            <div className="grid min-h-240 grid-cols-2 gap-6">
                                 {services.map((service, index) => (
                                     <Button
                                         key={service.id}
@@ -317,7 +321,7 @@ export default function Kiosk({ csrf }: { csrf: string }) {
                                 fontFamily: 'Arial, sans-serif'
                             }}>
                                 <div style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '10px' }}>
-                                    RUMAH SAKIT DR. OEN SURAKARTA
+                                    RSIA Melati Husada
                                 </div>
                                 <hr style={{ margin: '15px 0', border: '1px solid #333' }} />
                                 <div style={{ fontWeight: 'bold', margin: '10px 0' }}>NOMOR ANTRIAN</div>

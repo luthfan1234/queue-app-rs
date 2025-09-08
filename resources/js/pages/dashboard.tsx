@@ -10,7 +10,7 @@ import { useState } from "react";
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
-    title: "Manajemen Antrian - RS Dr. Oen",
+    title: "Manajemen Antrian - RSIA Melati Husada",
     href: "/dashboard",
   },
 ];
@@ -178,7 +178,7 @@ export default function Dashboard(props: DashboardProps) {
 
   return (
     <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Rumah Sakit Dr. Oen - Sistem Manajemen Antrian" />
+      <Head title="RSIA Melati Husada - Sistem Manajemen Antrian" />
       <div className="flex h-full flex-1 flex-col gap-6 rounded-xl p-6">
         {/* Counter Selection */}
         <Card className="mb-6">
@@ -204,7 +204,7 @@ export default function Dashboard(props: DashboardProps) {
                   <div className="text-center">
                     <div className="text-lg font-bold">Loket {counter}</div>
                     <div className="text-xs">
-                      {countersStatus[counter]?.status === 'busy' ? 'Sibuk' : 'Tersedia'}
+                      {countersStatus[counter]?.status === 'busy' ? 'Sedang dipakai' : 'Tersedia'}
                     </div>
                   </div>
                 </Button>

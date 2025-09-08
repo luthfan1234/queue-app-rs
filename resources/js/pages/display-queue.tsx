@@ -86,9 +86,10 @@ export default function DisplayQueue({ currentQueue, nextQueues = [] }: DisplayQ
                     {/* Medical Header */}
                     <header className="py-6 text-center">
                         <div className="mb-2 mt-4">
-                            <h1 className="text-4xl font-bold text-white mb-3 tracking-tight drop-shadow-lg" style={{ fontFamily: 'Nunito, sans-serif' }}>
-                                RUMAH SAKIT DR. OEN SURAKARTA
+                            <h1 className="text-4xl font-bold text-white mb-2 tracking-tight drop-shadow-lg" style={{ fontFamily: 'Nunito, sans-serif' }}>
+                                RSIA Melati Husada
                             </h1>
+                            <p className="text-sm mb-2 text-white/80">Jl. Kawi No.32, Gading Kasri, Kec. Klojen, Kota Malang, Jawa Timur</p>
                             <div className="flex items-center justify-center space-x-3 mb-3">
                                 <div className="w-10 h-0.5 bg-gradient-to-r from-white/70 to-white/50 rounded-full"></div>
                                 <div className="w-3 h-3 bg-white rounded-full animate-heartbeat shadow-lg"></div>
@@ -193,7 +194,7 @@ export default function DisplayQueue({ currentQueue, nextQueues = [] }: DisplayQ
                             <div className="flex items-center justify-center space-x-3 text-sm text-slate-600">
                                 <span className="inline-flex items-center space-x-2">
                                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-lg"></div>
-                                    <span>Rumah Sakit Dr. Oen Surakarta</span>
+                                    <span>RSIA Melati Husada</span>
                                 </span>
                                 <span>•</span>
                                 <span>Pelayanan Kesehatan Terpercaya</span>

@@ -31,7 +31,10 @@ class KioskController extends Controller
             1 => ['code' => 'EGD', 'name' => 'Pelayanan Gawat Darurat'],
             2 => ['code' => 'PRJ', 'name' => 'Pelayanan Rawat jalan / Poliklinik'],
             3 => ['code' => 'RI', 'name' => 'Rawat Inap'],
-            4 => ['code' => 'F', 'name' => 'Pelayanan Farmasi']
+            4 => ['code' => 'F', 'name' => 'Pelayanan Farmasi'],
+            5 => ['code' => 'GDM', 'name' => 'Pelayanan Gigi dan Mulut'],
+            6 => ['code' => 'LAB', 'name' => 'Pelayanan Laboratorium'],
+            7 => ['code' => 'RAD', 'name' => 'Pelayanan Radiologi'],
         ];
 
         $service = $serviceMap[$request->service_id];

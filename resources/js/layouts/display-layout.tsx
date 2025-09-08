@@ -8,7 +8,7 @@ interface Props {
 export default ({ children }: Props) => {
     return (
         <>
-            <Head title="Rumah Sakit Dr. Oen Surakarta - Sistem Antrian Digital">
+            <Head title="RSIA Melati Husada - Sistem Antrian Digital">
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link href="https://fonts.bunny.net/css?family=poppins:300,400,500,600,700,800&family=nunito:400,500,600,700" rel="stylesheet" />
             </Head>
