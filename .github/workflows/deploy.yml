@@ -21,7 +21,6 @@ jobs:
       # 3️⃣ Install dan build frontend
       - name: Build frontend
         run: |
-          cd frontend
           npm ci
           npm run build
 
