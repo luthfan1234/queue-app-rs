@@ -36,8 +36,9 @@ jobs:
         uses: easingthemes/ssh-deploy@v5.0.0
         with:
           SSH_PRIVATE_KEY: ${{ secrets.VPS_KEY }}
-          REMOTE_USER: ${{ secrets.VPS_USER }}        # hanya username
-          REMOTE_HOST: ${{ secrets.VPS_HOST }}        # hanya IP/domain, jangan ada @ atau port
+          REMOTE_HOST: 157.245.55.142       
+          REMOTE_USER: root
+        # hanya IP/domain, jangan ada @ atau port
           TARGET: "/var/www/your-project"
           SOURCE: "./"                                # direktori repo
           ARGS: "-rlgoDzvc --delete"
