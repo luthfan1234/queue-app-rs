@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Setup PHP & Install Composer dependencies (combined for clarity)
+      # 2️⃣ Setup PHP & Install Composer dependencies
       - name: Setup PHP and Install Dependencies
         uses: shivammathur/setup-php@v2
         with:
@@ -23,7 +23,7 @@ jobs:
           tools: composer
       - run: composer install --no-dev --prefer-dist --optimize-autoloader
 
-      # 3️⃣ Setup Node, Install, and Build (combined for clarity)
+      # 3️⃣ Setup Node, Install, and Build
       - name: Setup Node and Build Frontend
         uses: actions/setup-node@v3
         with:
@@ -31,20 +31,19 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      # 4️⃣ Deploy built files to VPS using rsync
+      # 4️⃣ Deploy to VPS using rsync
       - name: Deploy to VPS
         uses: easingthemes/ssh-deploy@v5.0.0
         with:
           SSH_PRIVATE_KEY: ${{ secrets.VPS_KEY }}
-          ARGS: "-rlgoDzvc -i --delete" # rsync arguments
-          SOURCE: "/" # Sync the entire repository content
+          ARGS: "-rlgoDzvc --delete"
+          SOURCE: "./"
           REMOTE_HOST: ${{ secrets.VPS_HOST }}
           REMOTE_USER: ${{ secrets.VPS_USER }}
-          TARGET: "/var/www/your-project" # Target directory on your server
-          # Exclude files you don't want to upload
-          EXCLUDE: "/.git/, /.github/, /node_modules/, /.env"
+          TARGET: "/var/www/your-project"
+          EXCLUDE: ".git,.github,node_modules,.env"
 
-      # 5️⃣ Run post-deployment commands on the VPS
+      # 5️⃣ Post-deploy Laravel commands
       - name: Run Post-Deployment Commands
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -57,6 +56,5 @@ jobs:
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
-            # You might also want to fix permissions or restart services here
-            # sudo chown -R www-data:www-data /var/www/your-project
-            # sudo systemctl restart php8.2-fpm
+            sudo chown -R www-data:www-data /var/www/your-project
+            sudo chmod -R 755 storage bootstrap/cache
