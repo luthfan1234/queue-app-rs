@@ -1,4 +1,4 @@
-name: Deploy Laravel Monolith
+name: Deploy Laravel App
 
 on:
   push:
@@ -6,11 +6,11 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repository
+      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -19,27 +19,42 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mbstring, bcmath, xml, curl, sqlite
+          extensions: mbstring, bcmath, xml, curl, sqlite3
+          tools: composer
 
-      # 3️⃣ Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      # 3️⃣ Cache Composer dependencies
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
         with:
-          node-version: 20
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
 
       # 4️⃣ Install Composer dependencies
       - name: Install Composer dependencies
         run: composer install --no-dev --prefer-dist --optimize-autoloader
 
-      # 5️⃣ Install Node dependencies
-      - name: Install Node dependencies
+      # 5️⃣ Setup Node.js & npm
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      # 6️⃣ Cache Node modules
+      - name: Cache Node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      # 7️⃣ Install npm dependencies
+      - name: Install npm dependencies
         run: npm ci
 
-      # 6️⃣ Build frontend (Vite)
+      # 8️⃣ Build frontend (Vite)
       - name: Build frontend
-        run: composer run dev
+        run: npm run build
 
-      # 7️⃣ Deploy to VPS via SSH
+      # 9️⃣ Deploy to VPS via SSH
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -48,14 +63,12 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           port: 22
           script: |
-            echo "🚀 Starting deployment..."
             cd /var/www/your-project
             git pull origin main
             composer install --no-dev --prefer-dist --optimize-autoloader
             npm ci
-            composer run dev
+            npm run build
             php artisan migrate --force
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
-            echo "✅ Deployment finished successfully!"
