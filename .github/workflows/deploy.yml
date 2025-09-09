@@ -1,6 +1,5 @@
-name: Deploy Laravel + React
+name: Deploy Laravel Monolith
 
-# Trigger: setiap push ke branch main
 on:
   push:
     branches:
@@ -11,49 +10,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout kode dari repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Setup Node.js (untuk React/Vite build)
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      # 3️⃣ Setup PHP (untuk Laravel)
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: mbstring, bcmath, xml, curl, sqlite
 
-      # 4️⃣ Install Composer dependencies (Laravel)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
       - name: Install Composer dependencies
         run: composer install --no-dev --prefer-dist --optimize-autoloader
 
-      # 5️⃣ Install Node dependencies & build React
-      - name: Install NPM dependencies and build
-        working-directory: ./frontend
-        run: |
-          npm ci
-          npm run build
+      - name: Build Frontend (Vite)
+        run: composer run dev
 
-      # 6️⃣ Deploy ke VPS via SSH
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.VPS_HOST }}        # IP VPS
-          username: ${{ secrets.VPS_USER }}    # user VPS (misal root)
-          key: ${{ secrets.VPS_KEY }}          # private key tanpa passphrase
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
           port: 22
           script: |
             echo "🚀 Starting deployment..."
             cd /var/www/your-project
             git pull origin main
             composer install --no-dev --prefer-dist --optimize-autoloader
-            npm ci
-            npm run build
+            composer run dev
             php artisan migrate --force
             php artisan config:cache
             php artisan route:cache
