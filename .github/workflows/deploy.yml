@@ -9,33 +9,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Ambil kode dari GitHub
+      # 1️⃣ Checkout kode
       - uses: actions/checkout@v3
 
-      # 2️⃣ Setup Node.js untuk frontend
+      # 2️⃣ Setup PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          extensions: mbstring, bcmath, curl, xml, zip, pdo_mysql
+
+      # 3️⃣ Install Laravel dependencies
+      - name: Install Laravel backend
+        run: composer install --no-dev --optimize-autoloader
+
+      # 4️⃣ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
-      # 3️⃣ Install dan build frontend
+      # 5️⃣ Build frontend
       - name: Build frontend
         run: |
           npm ci
           npm run build
 
-      # 4️⃣ Setup PHP untuk backend
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.4
-
-      # 5️⃣ Install dependencies Laravel
-      - name: Install backend
-        run: |
-          composer install --no-dev --optimize-autoloader
-
-      # 6️⃣ Deploy ke VPS via SSH
+      # 6️⃣ Deploy ke VPS
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v0.1.7
         with:
