@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import DisplayLayout from '@/layouts/display-layout';
-import { Stethoscope,Bone, UserCheck, Microscope, ScanLine, BriefcaseMedical, Syringe, Printer } from 'lucide-react';
+import { Stethoscope, Bone, UserCheck, Microscope, ScanLine, BriefcaseMedical, Syringe, Printer } from 'lucide-react';
 import { useState, useRef } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
