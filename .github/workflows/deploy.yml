@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repo
+      # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -23,7 +23,7 @@ jobs:
           tools: composer
       - run: composer install --no-dev --prefer-dist --optimize-autoloader
 
-      # 3️⃣ Setup Node, Install, and Build
+      # 3️⃣ Setup Node.js, Install, and Build Frontend
       - name: Setup Node and Build Frontend
         uses: actions/setup-node@v3
         with:
@@ -31,30 +31,32 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      # 4️⃣ Deploy to VPS using rsync
+      # 4️⃣ Deploy files to VPS using rsync
       - name: Deploy to VPS
         uses: easingthemes/ssh-deploy@v5.0.0
         with:
           SSH_PRIVATE_KEY: ${{ secrets.VPS_KEY }}
-          ARGS: "-rlgoDzvc --delete"
-          SOURCE: "./"
-          REMOTE_HOST: ${{ secrets.VPS_HOST }}
-          REMOTE_USER: ${{ secrets.VPS_USER }}
+          REMOTE_USER: ${{ secrets.VPS_USER }}        # hanya username
+          REMOTE_HOST: ${{ secrets.VPS_HOST }}        # hanya IP/domain, jangan ada @ atau port
           TARGET: "/var/www/your-project"
+          SOURCE: "./"                                # direktori repo
+          ARGS: "-rlgoDzvc --delete"
           EXCLUDE: ".git,.github,node_modules,.env"
 
-      # 5️⃣ Post-deploy Laravel commands
+      # 5️⃣ Run post-deployment commands on VPS
       - name: Run Post-Deployment Commands
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
+          port: 22
           script: |
             cd /var/www/your-project
             php artisan migrate --force
             php artisan config:cache
             php artisan route:cache
             php artisan view:cache
-            sudo chown -R www-data:www-data /var/www/your-project
-            sudo chmod -R 755 storage bootstrap/cache
+            # Optional: set permission & restart service
+            # sudo chown -R www-data:www-data /var/www/your-project
+            # sudo systemctl restart php8.2-fpm
